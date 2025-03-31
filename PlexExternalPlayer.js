@@ -67,26 +67,20 @@ var makeRequest = function (url, serverId) {
               users: []
           };
       }
-      logMessage('Looking for token of serverId:'+serverId)
-      let tokenFound = false
       if (serverId !== undefined) {
           serverLoop:
           for (var i = 0; i < serverNode.users.length; i++) {
-            logMessage('Checking server list ('+serverNode.users[i].servers.length+') for user:' +serverNode.users[i].username)
               for (var j = 0; j < serverNode.users[i].servers.length; j++) {
-                logMessage('Checking server with id '+serverNode.users[i].servers[j].machineIdentifier)
                   if (serverNode.users[i].servers[j].machineIdentifier == serverId) {
                       tokenToTry = serverNode.users[i].servers[j].accessToken;
                       logMessage('Token found:' + tokenToTry);
-                      tokenFound = true
                       break serverLoop;
+                  } else {
+                      showToast('Could not find authentication info', 1);
+                      reject();
+                      return;
                   }
               }
-          }
-          if (!tokenFound){
-              showToast('Could not find authentication info', 1);
-              reject();
-              return;
           }
       }
 
@@ -139,6 +133,7 @@ var openItemOnAgent = function (path, id, openFolder, serverId) {
   logMessage('Playing ' + path);
   // umicrosharp doesn't handle plus properly
   path = path.replace(/\+/g, '[PLEXEXTPLUS]');
+  path = path.replace('\/mnt', 'Z:\\');
   var url = 'http://localhost:7251/?protocol=2&item=' + encodeURIComponent(path);
   return new Promise(function (resolve, reject) {
       makeRequest(url).then(function () {
