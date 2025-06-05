@@ -67,20 +67,26 @@ var makeRequest = function (url, serverId) {
               users: []
           };
       }
+      logMessage('Looking for token of serverId:'+serverId)
+      let tokenFound = false
       if (serverId !== undefined) {
           serverLoop:
           for (var i = 0; i < serverNode.users.length; i++) {
+            logMessage('Checking server list ('+serverNode.users[i].servers.length+') for user:' +serverNode.users[i].username)
               for (var j = 0; j < serverNode.users[i].servers.length; j++) {
+                logMessage('Checking server with id '+serverNode.users[i].servers[j].machineIdentifier)
                   if (serverNode.users[i].servers[j].machineIdentifier == serverId) {
                       tokenToTry = serverNode.users[i].servers[j].accessToken;
                       logMessage('Token found:' + tokenToTry);
+                      tokenFound = true
                       break serverLoop;
-                  } else {
-                      showToast('Could not find authentication info', 1);
-                      reject();
-                      return;
                   }
               }
+          }
+          if (!tokenFound){
+              showToast('Could not find authentication info', 1);
+              reject();
+              return;
           }
       }
 
@@ -328,7 +334,7 @@ var getHosts = function () {
 }
 
 // Make buttons smaller
-jQuery('body').append('<style>.plexextplayericocover {right: 10px; top: 10px; position:absolute; display:none;font-size:15px;} .glyphicon.plexfolderextplayerico:before {  content: "\\e145";   } .glyphicon.plexextplayerico:before {  content: "\\e161";   }</style>');
+jQuery('body').append('<style>.plexextplayericocover {right: -3px; top: -12px; position:absolute; display:none;font-size:65px;} .glyphicon.plexfolderextplayerico:before {  content: "\\e145";   } .glyphicon.plexextplayerico:before {  content: "\\e161";   }</style>');
 
 //Get known Plex Servers
 var pmsUrls = new Map();
